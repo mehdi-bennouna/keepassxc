@@ -443,7 +443,8 @@ void EntryView::fitColumnsToContents()
  */
 void EntryView::resetFixedColumns()
 {
-    for (const auto& col : {EntryModel::Paperclip, EntryModel::Totp, EntryModel::PasswordStrength}) {
+    for (const auto& col :
+         {EntryModel::Paperclip, EntryModel::Totp, EntryModel::Passkey, EntryModel::PasswordStrength}) {
         if (!isColumnHidden(col)) {
             header()->setSectionResizeMode(col, QHeaderView::Fixed);
 
@@ -478,6 +479,7 @@ void EntryView::resetViewToDefaults()
     header()->showSection(EntryModel::Modified);
     header()->showSection(EntryModel::Paperclip);
     header()->showSection(EntryModel::Totp);
+    header()->showSection(EntryModel::Passkey);
 
     header()->hideSection(EntryModel::Password);
     header()->hideSection(EntryModel::Expires);
@@ -497,6 +499,7 @@ void EntryView::resetViewToDefaults()
     // Reorder some columns
     header()->moveSection(header()->visualIndex(EntryModel::Paperclip), 1);
     header()->moveSection(header()->visualIndex(EntryModel::Totp), 2);
+    header()->moveSection(header()->visualIndex(EntryModel::Passkey), 3);
 
     // Sort by title or group (depending on the mode)
     m_sortModel->sort(EntryModel::Title, Qt::AscendingOrder);
