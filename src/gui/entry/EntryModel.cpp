@@ -117,7 +117,7 @@ int EntryModel::columnCount(const QModelIndex& parent) const
         return 0;
     }
 
-    return 17;
+    return 18;
 }
 
 QVariant EntryModel::data(const QModelIndex& index, int role) const
@@ -266,6 +266,8 @@ QVariant EntryModel::data(const QModelIndex& index, int role) const
             return !entry->attachments()->isEmpty();
         case Totp:
             return entry->hasTotp();
+        case Passkey:
+            return entry->hasPasskey();
         case Size:
             return entry->size();
         default:
@@ -290,6 +292,11 @@ QVariant EntryModel::data(const QModelIndex& index, int role) const
         case Totp:
             if (entry->hasTotp()) {
                 return entry->hasValidTotp() ? icons()->icon("totp") : icons()->icon("totp-invalid");
+            }
+            break;
+        case Passkey:
+            if (entry->hasPasskey()) {
+                return icons()->icon("passkey");
             }
             break;
         case PasswordStrength:
@@ -404,6 +411,8 @@ QVariant EntryModel::headerData(int section, Qt::Orientation orientation, int ro
             return icons()->icon("paperclip");
         case Totp:
             return icons()->icon("totp");
+        case Passkey:
+            return icons()->icon("passkey");
         case PasswordStrength:
             return icons()->icon("lock-question");
         }
@@ -439,6 +448,8 @@ QVariant EntryModel::headerData(int section, Qt::Orientation orientation, int ro
             return tr("Has attachments");
         case Totp:
             return tr("Has TOTP");
+        case Passkey:
+            return tr("Has passkey");
         case Color:
             return tr("Background Color");
         }
