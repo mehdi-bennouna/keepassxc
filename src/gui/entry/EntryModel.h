@@ -51,7 +51,8 @@ public:
         PasswordStrength = 14,
         Color = 15,
         ParentGroupPath = 16,
-        Passkey = 17
+        Passkey = 17,
+        SshAgent = 18
     };
 
     explicit EntryModel(QObject* parent = nullptr);
