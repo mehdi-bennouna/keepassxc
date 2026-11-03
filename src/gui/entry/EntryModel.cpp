@@ -23,6 +23,7 @@
 #include <QMimeData>
 #include <QPalette>
 
+#include "config-keepassx.h"
 #include "core/Clock.h"
 #include "core/Entry.h"
 #include "core/Group.h"
@@ -33,6 +34,26 @@
 #ifdef Q_OS_MACOS
 #include "gui/osutils/macutils/MacUtils.h"
 #endif
+#ifdef KPXC_FEATURE_SSHAGENT
+#include "sshagent/KeeAgentSettings.h"
+#endif
+
+namespace
+{
+    /**
+     * Whether the entry is set up for SSH agent integration (has KeeAgent settings attached).
+     * Always false if SSH agent support is not compiled in.
+     */
+    bool entryHasSshAgentSettings(Entry* entry)
+    {
+#ifdef KPXC_FEATURE_SSHAGENT
+        return KeeAgentSettings::inEntryAttachments(entry->attachments());
+#else
+        Q_UNUSED(entry);
+        return false;
+#endif
+    }
+} // namespace
 
 EntryModel::EntryModel(QObject* parent)
     : QAbstractTableModel(parent)
@@ -117,7 +138,7 @@ int EntryModel::columnCount(const QModelIndex& parent) const
         return 0;
     }
 
-    return 18;
+    return 19;
 }
 
 QVariant EntryModel::data(const QModelIndex& index, int role) const
@@ -268,6 +289,8 @@ QVariant EntryModel::data(const QModelIndex& index, int role) const
             return entry->hasTotp();
         case Passkey:
             return entry->hasPasskey();
+        case SshAgent:
+            return entryHasSshAgentSettings(entry);
         case Size:
             return entry->size();
         default:
@@ -297,6 +320,11 @@ QVariant EntryModel::data(const QModelIndex& index, int role) const
         case Passkey:
             if (entry->hasPasskey()) {
                 return icons()->icon("passkey");
+            }
+            break;
+        case SshAgent:
+            if (entryHasSshAgentSettings(entry)) {
+                return icons()->icon("utilities-terminal");
             }
             break;
         case PasswordStrength:
@@ -413,6 +441,8 @@ QVariant EntryModel::headerData(int section, Qt::Orientation orientation, int ro
             return icons()->icon("totp");
         case Passkey:
             return icons()->icon("passkey");
+        case SshAgent:
+            return icons()->icon("utilities-terminal");
         case PasswordStrength:
             return icons()->icon("lock-question");
         }
@@ -450,6 +480,8 @@ QVariant EntryModel::headerData(int section, Qt::Orientation orientation, int ro
             return tr("Has TOTP");
         case Passkey:
             return tr("Has passkey");
+        case SshAgent:
+            return tr("Has SSH agent integration");
         case Color:
             return tr("Background Color");
         }
